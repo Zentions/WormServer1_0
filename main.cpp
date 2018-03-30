@@ -3,7 +3,6 @@
 
 #include "mainwindow.h"
 #include "interface.h"
-#include "controler.h"
 
 int main(int argc, char *argv[])
 {

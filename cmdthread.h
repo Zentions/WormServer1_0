@@ -4,7 +4,7 @@
 #include <QThread>
 #include <QTcpSocket>
 
-class CmdThread : public QThread
+class CmdThread : public QObject
 {
     Q_OBJECT
 
@@ -33,9 +33,6 @@ public slots:
 
     void cmdKeyPressed();
     void cmdKeyReleased();
-
-protected:
-    void run();
 
 };
 

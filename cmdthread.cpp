@@ -3,18 +3,13 @@
 #include "consts.h"
 #include "algo.h"
 
-CmdThread::CmdThread(QTcpSocket* socket, QObject *parent) :
-    QThread(parent)
+CmdThread::CmdThread(QTcpSocket* socket, QObject *parent):QObject(parent)
 {
     cmdSocket = socket;
     cmd_buf_fill = 0;
     connect(cmdSocket, SIGNAL(readyRead()), this, SLOT(newData()));
 }
 
-void CmdThread::run()
-{
-    QThread::run();
-}
 
 /**
   *当tcp socket有新数据到达时运行此函数

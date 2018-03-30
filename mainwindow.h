@@ -12,11 +12,6 @@
 #include <QHostAddress>
 #include <QObject>
 #include <QVector>
-typedef struct SocketAndThread
-{
-    QTcpSocket* socket;
-    QThread*  thread;
-} SocketAndThread;
 
 
 namespace Ui {
@@ -44,8 +39,9 @@ private:
     QUdpSocket *m_udpSocket;
     QTcpServer* pCmdServer;
     QTcpServer* pMapServer;
-
-    QVector<SocketAndThread>* vec;
+    QTcpSocket* clientCmdSocket;
+    CmdThread* cmdThread;
+    bool hasConnect;
 public:
     const static int DATA_HEARER_MAP = 1;    //图像数据
     const static int DATA_HEADER_CMD = 2;    //命令数据

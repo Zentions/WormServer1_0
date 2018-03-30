@@ -22,8 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->serverIPAddress->setText(tempAdd.toString());
         }
     }
+    hasConnect = false;
     //m_udpSocket = new QUdpSocket(this);
-    vec = new QVector<SocketAndThread>;
 //    pMapServer = new QTcpServer;
 //    pMapServer->listen(QHostAddress::Any, MAP_SERVER_PORT);
 //    qDebug()<<"map server listening"<<endl;
@@ -47,7 +47,9 @@ void MainWindow::on_connectBtn_clicked()
 
 void MainWindow::on_disconnectBtn_clicked()
 {
-
+   qDebug()<<"cmd server stop"<<endl;
+   pCmdServer->close();
+   someSocketDisconnected();
 }
 
 /**
@@ -55,45 +57,30 @@ void MainWindow::on_disconnectBtn_clicked()
   */
 void MainWindow::newMapClient()
 {
-    QTcpSocket* clientMapSocket = pMapServer->nextPendingConnection();
-    qDebug()<<"new map connection:"<<clientMapSocket->peerAddress().toString()<<endl;
+//    QTcpSocket* clientMapSocket = pMapServer->nextPendingConnection();
+//    qDebug()<<"new map connection:"<<clientMapSocket->peerAddress().toString()<<endl;
 
-    MapThread* mapThread = new MapThread(clientMapSocket);
-    connect(clientMapSocket, SIGNAL(disconnected()), this, SLOT(someSocketDisconnected()));
+//    MapThread* mapThread = new MapThread(clientMapSocket);
+//    connect(clientMapSocket, SIGNAL(disconnected()), this, SLOT(someSocketDisconnected()));
 
-    SocketAndThread st = {clientMapSocket, mapThread};
-    vec->append(st);
-
-    mapThread->start();
 }
 
 void MainWindow::newCmdClient()
 {
-    QTcpSocket* clientCmdSocket = pCmdServer->nextPendingConnection();
+    if(hasConnect)return;
+    clientCmdSocket = pCmdServer->nextPendingConnection();
     qDebug()<<"new cmd connection:"<<clientCmdSocket->peerAddress().toString()<<endl;
 
-    CmdThread* cmdThread = new CmdThread(clientCmdSocket);
+    cmdThread = new CmdThread(clientCmdSocket);
+    hasConnect = true;
     connect(clientCmdSocket, SIGNAL(disconnected()), this, SLOT(someSocketDisconnected()));
-
-    SocketAndThread st = {clientCmdSocket, cmdThread};
-    vec->append(st);
-
-    cmdThread->start();
 }
 
 void MainWindow::someSocketDisconnected()
 {
     qDebug()<<"cancel connect";
-    for(int i = 0; i < vec->size(); i ++)
-    {
-        if(vec->at(i).socket->state() == QAbstractSocket::UnconnectedState)
-        {
-            if(vec->at(i).socket->isOpen())
-                vec->at(i).socket->close();
-            vec->at(i).thread->quit();
-            connect(vec->at(i).thread, SIGNAL(finished()), vec->at(i).thread, SLOT(deleteLater()));
-            vec->remove(i);
-            i --;
-        }
-    }
+
+    if(clientCmdSocket->isOpen())
+             clientCmdSocket->close();
+    hasConnect = false;
 }
