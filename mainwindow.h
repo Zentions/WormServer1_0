@@ -12,7 +12,7 @@
 #include <QHostAddress>
 #include <QObject>
 #include <QVector>
-
+#include "form.h"
 
 namespace Ui {
 class MainWindow;
@@ -26,22 +26,26 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 public slots:
-    void newMapClient();
+    void newMapClient(QString);
     void newCmdClient();
     void someSocketDisconnected();
+    void endMapClient();
+
 private slots:
     void on_connectBtn_clicked();
 
     void on_disconnectBtn_clicked();
-
+signals:
+     void startMap(QString);
+     void endMap();
 private:
     Ui::MainWindow *ui;
-    QUdpSocket *m_udpSocket;
     QTcpServer* pCmdServer;
-    QTcpServer* pMapServer;
     QTcpSocket* clientCmdSocket;
     CmdThread* cmdThread;
+    MapThread *mapThread;
     bool hasConnect;
+    Form *workFrame;
 public:
     const static int DATA_HEARER_MAP = 1;    //图像数据
     const static int DATA_HEADER_CMD = 2;    //命令数据

@@ -2,55 +2,42 @@
 #define MAPTHREAD_H
 
 #include <QThread>
-#include <QTcpSocket>
+#include <QUdpSocket>
 #include <QTimer>
 #include <QColor>
 #include <QImage>
 #include <QPixmap>
+struct ImageFrameHead {
+    int funCode;                        //功能码
+    unsigned int uTransFrameHdrSize;    //sizeof(WIFI_FRAME_HEADER)
+    unsigned int uTransFrameSize;       //sizeof(WIFI_FRAME_HEADER) + Data Size
+
+    //数据帧变量
+    unsigned int uDataFrameSize;        //数据帧的总大小
+    unsigned int uDataFrameTotal;       //一帧数据被分成传输帧的个数
+    unsigned int uDataFrameCurr;        //数据帧当前的帧号
+    unsigned int uDataInFrameOffset;    //数据帧在整帧的偏移
+};
 
 class MapThread : public QThread
 {
     Q_OBJECT
 
 private:
+    QUdpSocket *socket;
+    QString ip;
 
-    int dest_width;           //客户端指定的宽度
-    int dest_height;          //客户端指定的高度
-    int send_width;           //发送图像的宽度
-    int send_height;          //发送图像的高度
-    int scaleby;              //缩放是依据目的图像的高度还是宽度
-
-    uchar* sent_img_buf;   //buffer of the image that have been sent
-    uchar* curt_img_buf;   //buffer of the current image
-    uchar* send_data_buf;
-    uchar cmd_buf[4];
-    int   cmd_buf_fill;
-
-    bool started;
-
-    int          interval;         //帧间时间间隔
-    QTcpSocket*  mapSocket;
-    QTimer* timer;
 
 public:
-    MapThread(QTcpSocket* socket, QObject *parent = 0);
+    MapThread(QString address, QObject *parent = 0);
     ~MapThread();
-
-    const static int SCALE_BY_WIDTH  = 1;
-    const static int SCALE_BY_HEIGHT = 2;
-
-    void setSendInterval(int i);
-
-signals:
+protected:
+    void run();
 
 public slots:
     void sendFrame();
-    void newData();
-    void newCommand();
-    void quit();
 
-protected:
-    void run();
+
 
 };
 

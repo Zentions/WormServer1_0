@@ -17,12 +17,15 @@ SOURCES += main.cpp\
     algo.cpp \
     cmdthread.cpp \
     interface.cpp \
-    mapthread.cpp
+    mapthread.cpp \
+    form.cpp
 
 HEADERS  += mainwindow.h \
     algo.h \
     cmdthread.h \
     consts.h \
     interface.h \
-    mapthread.h
-FORMS    += mainwindow.ui
+    mapthread.h \
+    form.h
+FORMS    += mainwindow.ui \
+    form.ui

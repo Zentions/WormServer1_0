@@ -20,15 +20,15 @@ MainWindow::MainWindow(QWidget *parent) :
     foreach (tempAdd, listAddress) {
         if(tempAdd.toString().contains("172.")){
             ui->serverIPAddress->setText(tempAdd.toString());
+
         }
     }
     hasConnect = false;
-    //m_udpSocket = new QUdpSocket(this);
-//    pMapServer = new QTcpServer;
-//    pMapServer->listen(QHostAddress::Any, MAP_SERVER_PORT);
-//    qDebug()<<"map server listening"<<endl;
-//    connect(pMapServer, SIGNAL(newConnection()), this, SLOT(newMapClient()));
-
+    connect(this, SIGNAL(startMap(QString)), this, SLOT(newMapClient(QString)));
+    connect(this, SIGNAL(endMap()), this, SLOT(endMapClient()));
+    ui->disconnectBtn->setEnabled(false);
+    pCmdServer = new QTcpServer;
+    clientCmdSocket = NULL;
 }
 
 MainWindow::~MainWindow()
@@ -38,49 +38,74 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_connectBtn_clicked()
 {
-    pCmdServer = new QTcpServer;
+
     pCmdServer->listen(QHostAddress::Any, CMD_SERVER_PORT);
     qDebug()<<"cmd server listening"<<endl;
     connect(pCmdServer, SIGNAL(newConnection()), this, SLOT(newCmdClient()));
-
+    this->ui->connectBtn->setEnabled(false);
+    this->ui->disconnectBtn->setEnabled(true);
 }
 
 void MainWindow::on_disconnectBtn_clicked()
 {
    qDebug()<<"cmd server stop"<<endl;
-   pCmdServer->close();
-   someSocketDisconnected();
+   if(pCmdServer->isListening())
+   {
+       pCmdServer->close();
+       someSocketDisconnected();
+   }
+   this->ui->connectBtn->setEnabled(true);
+   this->ui->disconnectBtn->setEnabled(false);
 }
 
 /**
   *每当有一个新连接时，启动一个线程单独为之服务
   */
-void MainWindow::newMapClient()
+void MainWindow::newMapClient(QString add)
 {
 //    QTcpSocket* clientMapSocket = pMapServer->nextPendingConnection();
 //    qDebug()<<"new map connection:"<<clientMapSocket->peerAddress().toString()<<endl;
 
-//    MapThread* mapThread = new MapThread(clientMapSocket);
-//    connect(clientMapSocket, SIGNAL(disconnected()), this, SLOT(someSocketDisconnected()));
+    mapThread = new MapThread(add);
+    mapThread->start();
+   // connect(clientMapSocket, SIGNAL(disconnected()), this, SLOT(someSocketDisconnected()));
 
 }
 
 void MainWindow::newCmdClient()
 {
     if(hasConnect)return;
-    clientCmdSocket = pCmdServer->nextPendingConnection();
-    qDebug()<<"new cmd connection:"<<clientCmdSocket->peerAddress().toString()<<endl;
-
+    clientCmdSocket = pCmdServer->nextPendingConnection();   
+    QString address  = clientCmdSocket->peerAddress().toString();
+    qDebug()<<"new cmd connection:"<<address;
+    emit startMap(address);
     cmdThread = new CmdThread(clientCmdSocket);
     hasConnect = true;
     connect(clientCmdSocket, SIGNAL(disconnected()), this, SLOT(someSocketDisconnected()));
+    this->hide();
+    workFrame = new Form();
+    workFrame->show();
+
 }
 
 void MainWindow::someSocketDisconnected()
 {
     qDebug()<<"cancel connect";
 
-    if(clientCmdSocket->isOpen())
-             clientCmdSocket->close();
+    if(clientCmdSocket!=0 && clientCmdSocket->isOpen())
+    {
+       clientCmdSocket->close();
+       emit endMap();
+       this->show();
+       workFrame->close();
+    }
     hasConnect = false;
+
+}
+void MainWindow::endMapClient()
+{
+    qDebug()<<"end map";
+    mapThread->requestInterruption();
+    mapThread->quit();
+    mapThread->wait();
 }
