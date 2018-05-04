@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT       += network
+QT       +=sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = WormServer1_0
@@ -18,7 +19,8 @@ SOURCES += main.cpp\
     cmdthread.cpp \
     interface.cpp \
     mapthread.cpp \
-    form.cpp
+    appmanagedialog.cpp \
+    workpanel.cpp
 
 HEADERS  += mainwindow.h \
     algo.h \
@@ -26,6 +28,8 @@ HEADERS  += mainwindow.h \
     consts.h \
     interface.h \
     mapthread.h \
-    form.h
+    appmanagedialog.h \
+    workpanel.h
 FORMS    += mainwindow.ui \
-    form.ui
+    appmanagedialog.ui \
+    workpanel.ui

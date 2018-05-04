@@ -76,15 +76,18 @@ void MainWindow::newCmdClient()
 {
     if(hasConnect)return;
     clientCmdSocket = pCmdServer->nextPendingConnection();   
-    QString address  = clientCmdSocket->peerAddress().toString();
+    address  = clientCmdSocket->peerAddress().toString();
     qDebug()<<"new cmd connection:"<<address;
-    emit startMap(address);
     cmdThread = new CmdThread(clientCmdSocket);
     hasConnect = true;
     connect(clientCmdSocket, SIGNAL(disconnected()), this, SLOT(someSocketDisconnected()));
     this->hide();
-    workFrame = new Form();
+    workFrame = new WorkPanel();
     workFrame->show();
+    emit startMap(address);
+//    m_pTimer = new QTimer(this);
+//    connect(m_pTimer, SIGNAL(timeout()), this, SLOT(handleTimeout()));
+//    m_pTimer->start(100);
 
 }
 
@@ -100,7 +103,6 @@ void MainWindow::someSocketDisconnected()
        workFrame->close();
     }
     hasConnect = false;
-
 }
 void MainWindow::endMapClient()
 {
@@ -108,4 +110,21 @@ void MainWindow::endMapClient()
     mapThread->requestInterruption();
     mapThread->quit();
     mapThread->wait();
+}
+
+//void MainWindow::handleTimeout()
+//{
+//    qDebug()<<"time end";
+//    if(hasConnect){
+//       qDebug()<<"time good";
+//       emit startMap(address);
+//       m_pTimer->stop();
+//    }
+//    qDebug()<<"time success";
+//}
+
+void MainWindow::on_disconnectBtn_2_clicked()
+{
+    AppManageDialog *dia = new AppManageDialog;
+    dia->exec();
 }
