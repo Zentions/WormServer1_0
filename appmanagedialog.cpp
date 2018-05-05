@@ -155,8 +155,8 @@ void AppManageDialog::on_addButton_2_clicked()
     {
         if(root->child(i)->checkState(0)==Qt::Checked)
         {
-            QProcess *po = new QProcess();//如果不在类中，则参数为空
-            po->start(root->child(i)->text(1).trimmed());
+            QStringList strList;//参数list
+            QProcess::startDetached(root->child(i)->text(1).trimmed(), strList);
             break;
         }
     }

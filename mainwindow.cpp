@@ -6,7 +6,7 @@
 #include <string>
 #include <QDesktopWidget>
 #include <QFile>
-
+#include "workpanel.h"
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -112,19 +112,10 @@ void MainWindow::endMapClient()
     mapThread->wait();
 }
 
-//void MainWindow::handleTimeout()
-//{
-//    qDebug()<<"time end";
-//    if(hasConnect){
-//       qDebug()<<"time good";
-//       emit startMap(address);
-//       m_pTimer->stop();
-//    }
-//    qDebug()<<"time success";
-//}
+
 
 void MainWindow::on_disconnectBtn_2_clicked()
 {
-    AppManageDialog *dia = new AppManageDialog;
+    WorkPanel *dia = new WorkPanel;
     dia->exec();
 }

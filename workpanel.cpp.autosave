@@ -74,6 +74,6 @@ void WorkPanel::closeEvent(QCloseEvent *e)
     minute = spend%60;
     spend /= 60;
     hour = spend;
-    QMessageBox::information(this,"温馨提示","您使用了"+QString::number(hour)+"时"+QString::number(minute)+"分"+QString::number(sec)+"\n秒");
+    QMessageBox::information(this,"温馨提示","您使用了"+QString::number(hour)+"时"+QString::number(minute)+"分"+QString::number(sec)+"秒");
     QDialog::closeEvent(e);
 }
