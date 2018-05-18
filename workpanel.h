@@ -21,12 +21,11 @@ class WorkPanel : public QDialog
 public:
     explicit WorkPanel(QWidget *parent = 0);
     ~WorkPanel();
-protected:
-   void closeEvent(QCloseEvent *);
+//protected:
+//   void closeEvent(QCloseEvent *);
 private slots:
     void on_pushButton_clicked();
 
-    void on_pushButton_2_clicked();
 private:
     Ui::WorkPanel *ui;
     QSqlQuery sql_query;

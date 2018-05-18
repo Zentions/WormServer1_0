@@ -7,6 +7,7 @@ WorkPanel::WorkPanel(QWidget *parent) :
     ui(new Ui::WorkPanel)
 {
     ui->setupUi(this);
+    setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
     ui->listWidget->setStyleSheet("QListWidget{border:1px solid gray; color:black;}"
                                "QListWidget::Item{padding-top:10px; padding-bottom:10px; }"
                                "QListWidget::Item:hover{background:skyblue; }"
@@ -39,8 +40,7 @@ WorkPanel::WorkPanel(QWidget *parent) :
             count++;
         }
     }
-    QDateTime time = QDateTime::currentDateTime();   //获取当前时间
-    last = time.toTime_t();
+
 }
 
 WorkPanel::~WorkPanel()
@@ -58,22 +58,6 @@ void WorkPanel::on_pushButton_clicked()
     }
 }
 
-void WorkPanel::on_pushButton_2_clicked()
-{
-   this->close();
-}
 
-void WorkPanel::closeEvent(QCloseEvent *e)
-{
-    QDateTime time = QDateTime::currentDateTime();   //获取当前时间
-    now = time.toTime_t();
-    int hour,minute,sec,spend;
-    spend = now -last;
-    sec = spend%60;
-    spend /= 60;
-    minute = spend%60;
-    spend /= 60;
-    hour = spend;
-    QMessageBox::information(this,"温馨提示","您使用了"+QString::number(hour)+"时"+QString::number(minute)+"分"+QString::number(sec)+"\n秒");
-    QDialog::closeEvent(e);
-}
+
+

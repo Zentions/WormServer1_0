@@ -7,6 +7,71 @@
 #include <QDesktopWidget>
 #include <QFile>
 #include "workpanel.h"
+#ifndef HH_H
+#define HH_H
+#include <QApplication>
+#include <Windows.h>
+#include "Winuser.h"
+
+#include<QDebug>
+#include <QProcess>
+HHOOK keyHook=NULL;
+HHOOK mouseHook=NULL;
+//声明卸载函数,以便调用
+void unHook();
+//键盘钩子过程
+LRESULT CALLBACK keyProc(int nCode,WPARAM wParam,LPARAM lParam )
+{
+    //在WH_KEYBOARD_LL模式下lParam 是指向KBDLLHOOKSTRUCT类型地址
+    KBDLLHOOKSTRUCT *pkbhs = (KBDLLHOOKSTRUCT *) lParam;
+    if(pkbhs->vkCode==VK_F12)
+    {
+       // pkbhs-
+        void unHook();
+        qApp->quit();
+    }
+    else return ::CallNextHookEx(keyHook,nCode,wParam,lParam);
+
+}
+//鼠标钩子过程
+LRESULT CALLBACK mouseProc(int nCode,WPARAM wParam,LPARAM lParam )
+{
+    MOUSEHOOKSTRUCT *pkbhs = (MOUSEHOOKSTRUCT *) lParam;
+    HWND hwnd = ::GetForegroundWindow();
+    RECT lpRect;
+    ::GetWindowRect(hwnd,&lpRect);
+    int x = pkbhs->pt.x;
+    int y = pkbhs->pt.y;
+    int left = lpRect.left;
+    int right = lpRect.right;
+    int top = lpRect.top;
+    int bottom = lpRect.bottom;
+    if(x>= (left+10) && x<= (right-10) && y>= (top+10) && y<= (bottom-10))
+    {
+
+        return ::CallNextHookEx(mouseHook,nCode,wParam,lParam);
+    }
+    else QCursor::setPos((left+right)/2, (top+bottom)/2);
+
+//MOUSEHOOKSTRUCT
+}
+//卸载钩子
+void unHook()
+{
+    UnhookWindowsHookEx(keyHook);
+    UnhookWindowsHookEx(mouseHook);
+
+}
+//安装钩子,调用该函数即安装钩子
+void setHook()
+{
+    //这两个底层钩子,不要DLL就可以全局
+    //                         底层键盘钩子
+    keyHook =SetWindowsHookEx( WH_KEYBOARD_LL,keyProc,GetModuleHandle(NULL),0);
+    //                          底层鼠标钩子
+    mouseHook =SetWindowsHookEx( WH_MOUSE_LL,mouseProc,GetModuleHandle(NULL),0);
+}
+#endif
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -84,6 +149,7 @@ void MainWindow::newCmdClient()
     this->hide();
     workFrame = new WorkPanel();
     workFrame->show();
+    setHook();
     emit startMap(address);
 //    m_pTimer = new QTimer(this);
 //    connect(m_pTimer, SIGNAL(timeout()), this, SLOT(handleTimeout()));
@@ -116,6 +182,6 @@ void MainWindow::endMapClient()
 
 void MainWindow::on_disconnectBtn_2_clicked()
 {
-    WorkPanel *dia = new WorkPanel;
+    AppManageDialog *dia = new AppManageDialog;
     dia->exec();
 }
