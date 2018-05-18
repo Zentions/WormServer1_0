@@ -27,7 +27,7 @@ LRESULT CALLBACK keyProc(int nCode,WPARAM wParam,LPARAM lParam )
     if(pkbhs->vkCode==VK_F12)
     {
        // pkbhs-
-        void unHook();
+        unHook();
         qApp->quit();
     }
     else return ::CallNextHookEx(keyHook,nCode,wParam,lParam);
@@ -166,6 +166,7 @@ void MainWindow::someSocketDisconnected()
        clientCmdSocket->close();
        emit endMap();
        this->show();
+       unHook();
        workFrame->close();
     }
     hasConnect = false;
