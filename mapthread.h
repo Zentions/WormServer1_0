@@ -7,6 +7,8 @@
 #include <QColor>
 #include <QImage>
 #include <QPixmap>
+#include <QScreen>
+
 struct ImageFrameHead {
     int funCode;                        //功能码
     unsigned int uTransFrameHdrSize;    //sizeof(WIFI_FRAME_HEADER)

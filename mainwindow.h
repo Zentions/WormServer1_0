@@ -27,26 +27,26 @@ public:
     ~MainWindow();
 
 public slots:
-    void newMapClient(QString);
+//    void newMapClient(QString);
     void newCmdClient();
     void someSocketDisconnected();
-    void endMapClient();
+//    void endMapClient();
 
 private slots:
     void on_connectBtn_clicked();
  //   void handleTimeout();
     void on_disconnectBtn_clicked();
     void on_disconnectBtn_2_clicked();
-
-signals:
-     void startMap(QString);
-     void endMap();
+protected:
+    void paintEvent(QPaintEvent *e);
+//signals:
+//     void startMap(QString);
+//     void endMap();
 private:
     Ui::MainWindow *ui;
     QTcpServer* pCmdServer;
     QTcpSocket* clientCmdSocket;
     CmdThread* cmdThread;
-    MapThread *mapThread;
     bool hasConnect;
     WorkPanel *workFrame;
  //   QTimer *m_pTimer;

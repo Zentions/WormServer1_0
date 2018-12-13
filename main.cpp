@@ -11,11 +11,16 @@
 #include "mainwindow.h"
 #include "interface.h"
 #include <iostream>
+#include <QProcess>
+#include <QDesktopServices>
+#include <QUrl>
+
 using namespace std;
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    //QDesktopServices::openUrl(QUrl("file:///C:/ethereum/Qt/WormServer1_1/GethJavaScriptConsole.bat"));
     QDesktopWidget* deskWidget = a.desktop();
     QRect screenRect  = deskWidget->screenGeometry();
     screen_width = screenRect.width();
@@ -47,6 +52,5 @@ int main(int argc, char *argv[])
    // database.close();
     MainWindow w;
     w.show();
-
     return a.exec();
 }

@@ -6,6 +6,8 @@ AppManageDialog::AppManageDialog(QWidget *parent) :
     ui(new Ui::AppManageDialog)
 {
     ui->setupUi(this);
+    this->setStyleSheet("QTreeWidget{background-image: url(./imgs/4.png)}"
+                                "QTreeWidget::item{height:50px;width:50px;}");
     root = new QTreeWidgetItem(ui->treeWidget);
     root->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
     root->setText(0,"应用名称");

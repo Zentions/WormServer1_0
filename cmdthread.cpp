@@ -2,12 +2,16 @@
 #include "interface.h"
 #include "consts.h"
 #include "algo.h"
+#include <QProcess>
+#include <QString>
 
 CmdThread::CmdThread(QTcpSocket* socket, QObject *parent):QObject(parent)
 {
     cmdSocket = socket;
     cmd_buf_fill = 0;
     connect(cmdSocket, SIGNAL(readyRead()), this, SLOT(newData()));
+    mapThread = new MapThread(socket->peerAddress().toString());
+    mapThread->start();
 }
 
 
@@ -33,7 +37,7 @@ void CmdThread::newData()
 
 void CmdThread::newCommand()
 {
-    qDebug()<<"new command";
+   // qDebug()<<"new command";
     int cmd = cmd_buf[0];
     switch(cmd)
     {
@@ -176,13 +180,38 @@ void CmdThread::cmdMouseWheel()
     Interface::mouseWheel(delta, x, y);
 }
 
+QString getServerAcconut()
+{
+    QProcess p(0);
+    QString arg = "node web3Script.js -c ";
+    p.setWorkingDirectory("E:\\ethereum\\web3");
+    p.start("cmd", QStringList()<<"/c"<< arg);
+    p.waitForStarted();
+    p.waitForFinished();
+    QString strTemp=QString::fromLocal8Bit(p.readAllStandardOutput());
+    qDebug() << strTemp;
+    return strTemp;
+}
+
 void CmdThread::cmdScreenSize()
 {
-    uchar uc[8];
+    QString acc = getServerAcconut();
+    acc = acc.section('*',1,1);
+    qDebug() << acc;
+    uchar uc[48];
     uc[0] = CMD_GET_SCREEN_SIZE_RES;
     uc[1] = screen_width / 0x100;
     uc[2] = screen_width % 0x100;
     uc[3] = screen_height / 0x100;
     uc[4] = screen_height % 0x100;
-    writeAndBlock(cmdSocket, uc, 8);
+    for(int i=0; i<acc.length(); i++){
+        uc[5+i] = acc[i].toLatin1();
+    }
+    writeAndBlock(cmdSocket, uc, 48);
+}
+CmdThread::~CmdThread()
+{
+    mapThread->requestInterruption();
+    mapThread->quit();
+    mapThread->wait();
 }

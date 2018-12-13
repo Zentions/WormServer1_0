@@ -34,8 +34,8 @@ WorkPanel::WorkPanel(QWidget *parent) :
             QString name = sql_query.value(0).toString();
             QString path = sql_query.value(1).toString();
             QListWidgetItem *item = new QListWidgetItem(name, ui->listWidget);
-            if(count%2==0)item->setIcon(QIcon("./app1.png"));
-            else item->setIcon(QIcon("./app2.png"));
+            if(count%2==0)item->setIcon(QIcon(".//imgs//app1.png"));
+            else item->setIcon(QIcon(".//imgs//app2.png"));
             map.insert(name,path);
             count++;
         }

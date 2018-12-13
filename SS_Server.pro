@@ -6,12 +6,12 @@
 
 QT       += core gui
 QT       += network
-QT       +=sql
+QT       += sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = WormServer1_0
 TEMPLATE = app
-
+RC_ICONS = server_icon.ico
 
 SOURCES += main.cpp\
         mainwindow.cpp \

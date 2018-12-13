@@ -1,11 +1,12 @@
 #include "interface.h"
-
+#include "QString"
+#include <QDebug>
 int screen_width = 0;
 int screen_height = 0;
-//int i = 0;
 
-Interface::Interface()
+Interface::Interface(QObject *parent) : QObject(parent)
 {
+
 }
 
 QPoint Interface::transformCoordinate(QPoint p)
@@ -17,22 +18,27 @@ QPoint Interface::transformCoordinate(QPoint p)
 
 void Interface::mouseMoveTo(int x, int y)
 {
-    QPoint p = transformCoordinate(QPoint(x, y));
-    mouse_event(MOUSEEVENTF_ABSOLUTE|MOUSEEVENTF_MOVE, p.x(), p.y(), 0, 0);
+//    QPoint p = transformCoordinate(QPoint(x, y));
+    QString cmd = "xdotool mousemove "+QString::number(x)+" "+QString::number(y);
+    QByteArray ba = cmd.toLatin1();
+    system(ba.data());
 }
 
 void Interface::mouseLeftDown(int x, int y)
 {
     QPoint p;
+    qDebug()<<x<<" "<<y;
     if(x < 0 || y < 0)
     {
-        p = getCursorPos();
+        return;
     }
-    else
-    {
-        p = transformCoordinate(QPoint(x, y));
-    }
-    mouse_event(MOUSEEVENTF_ABSOLUTE|MOUSEEVENTF_LEFTDOWN, p.x(), p.y(), 0, 0);
+//    else
+//    {
+//        p = transformCoordinate(QPoint(x, y));
+//    }
+    QString cmd = "xdotool mousemove "+QString::number(x)+" "+QString::number(y)+" click 1";
+    QByteArray ba = cmd.toLatin1();
+    system(ba.data());
 }
 
 void Interface::mouseLeftUp(int x, int y)
@@ -46,7 +52,7 @@ void Interface::mouseLeftUp(int x, int y)
     {
         p = transformCoordinate(QPoint(x, y));
     }
-    mouse_event(MOUSEEVENTF_ABSOLUTE|MOUSEEVENTF_LEFTUP, p.x(), p.y(), 0, 0);
+   // mouse_event(MOUSEEVENTF_ABSOLUTE|MOUSEEVENTF_LEFTUP, p.x(), p.y(), 0, 0);
 }
 
 void Interface::mouseRightDown(int x, int y)
@@ -60,7 +66,9 @@ void Interface::mouseRightDown(int x, int y)
     {
         p = transformCoordinate(QPoint(x, y));
     }
-    mouse_event(MOUSEEVENTF_ABSOLUTE|MOUSEEVENTF_RIGHTDOWN, p.x(), p.y(), 0, 0);
+    QString cmd = "xdotool mousemove "+QString::number(x)+" "+QString::number(y)+" click 3";
+    QByteArray ba = cmd.toLatin1();
+    system(ba.data());
 }
 
 void Interface::mouseRightUp(int x, int y)
@@ -74,7 +82,7 @@ void Interface::mouseRightUp(int x, int y)
     {
         p = transformCoordinate(QPoint(x, y));
     }
-    mouse_event(MOUSEEVENTF_ABSOLUTE|MOUSEEVENTF_RIGHTUP, p.x(), p.y(), 0, 0);
+  //  mouse_event(MOUSEEVENTF_ABSOLUTE|MOUSEEVENTF_RIGHTUP, p.x(), p.y(), 0, 0);
 }
 
 void Interface::mouseWheel(int delta, int x, int y)
@@ -88,9 +96,11 @@ void Interface::mouseWheel(int delta, int x, int y)
     {
         p = transformCoordinate(QPoint(x, y));
     }
-    mouse_event(MOUSEEVENTF_ABSOLUTE|MOUSEEVENTF_WHEEL, p.x(), p.y(), delta, 0);
+    QString cmd = "xdotool mousemove "+QString::number(x)+" "+QString::number(y)+" click 2";
+    QByteArray ba = cmd.toLatin1();
+    system(ba.data());
+    //mouse_event(MOUSEEVENTF_ABSOLUTE|MOUSEEVENTF_WHEEL, p.x(), p.y(), delta, 0);
 }
-
 QPoint Interface::getCursorPos()
 {
     return QCursor::pos();
@@ -108,10 +118,13 @@ void Interface::setCursorPos(int x, int y)
 
 void Interface::keyPressed(uchar key)
 {
-    keybd_event(key, 0x45, KEYEVENTF_EXTENDEDKEY, 0);
+    QString cmd = "xdotool key ";
+    cmd.append(QChar(key));
+    QByteArray ba = cmd.toLatin1();
+    system(ba.data());
 }
 
 void Interface::keyReleased(uchar key)
 {
-    keybd_event(key, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+   // keybd_event(key, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
 }

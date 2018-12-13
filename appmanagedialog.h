@@ -11,6 +11,7 @@
 #include <QDialog>
 #include <QTreeWidgetItem>
 #include <QProcess>
+
 namespace Ui {
 class AppManageDialog;
 }
